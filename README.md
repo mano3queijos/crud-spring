@@ -376,3 +376,56 @@ O método delete recebe o valor do identificador (id) como um parâmetro de cami
 >@PutMapping é uma anotação que mapeia solicitações HTTP do tipo PUT para o método update. Isso significa que o método update será executado quando uma solicitação PUT for feita para o endpoint correspondente, que inclui um parâmetro de caminho {id}.
 O método update recebe o valor do identificador (id) como um parâmetro de caminho usando a anotação @PathVariable e um objeto Contact no corpo da solicitação usando a anotação @RequestBody.
 O método verifica se existe um contato com o identificador fornecido no repositório. Se o contato existir, ele atualiza os campos do contato com os valores fornecidos no objeto contact e salva as alterações usando repository.save(record). Em seguida, ele retorna uma resposta com código de status 200 (OK) contendo o contato atualizado. Se o contato não existir, uma resposta com código de status 404 (Not Found) é retornada.
+
+
+## Bean:
+
+```ruby
+@SpringBootApplication
+public class SpringCloudMysqlApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringCloudMysqlApplication.class, args);
+	}
+
+	@Bean
+	CommandLineRunner init(ContactRepository repository) {
+		return args -> {
+			repository.deleteAll();
+			LongStream.range(1, 11)
+					.mapToObj(i -> {
+						Contact c = new Contact();
+						c.setName("Contact " + i);
+						c.setEmail("contact" + i + "@email.com");
+						c.setPhone("(111) 111-1111");
+						return c;
+					})
+					.map(v -> repository.save(v))
+					.forEach(System.out::println);
+		};
+	}
+}
+```
+
+>@SpringBootApplication:
+Essa anotação é usada para marcar a classe SpringCloudMysqlApplication como a classe principal do aplicativo Spring Boot. Isso significa que a partir dessa classe, o aplicativo será inicializado.
+public static void main(String[] args):
+Esse é o método principal do aplicativo, que inicia o aplicativo Spring Boot quando é executado. Ele chama SpringApplication.run() para iniciar o aplicativo.
+@Bean CommandLineRunner init(ContactRepository repository):
+
+>Essa anotação @Bean marca o método init como um método que cria e configura um bean Spring. Especificamente, o método init retorna um CommandLineRunner, que é uma interface Spring Boot usada para executar código ao iniciar o aplicativo.
+O método init recebe um parâmetro do tipo ContactRepository, que é usado para interagir com o repositório de contatos (banco de dados).
+Código dentro do CommandLineRunner:
+
+>Dentro do CommandLineRunner, o código é executado quando o aplicativo é iniciado. Esse código realiza as seguintes ações:
+- repository.deleteAll(): Remove todos os registros existentes na tabela de contatos, se houver algum.
+
+- wLongStream.range(1, 11): Isso cria um fluxo de números inteiros de 1 a 10 (inclusive).
+
+- mapToObj(i -> { ... }): Mapeia cada número do fluxo para um objeto Contact com valores de nome, e-mail e telefone específicos.
+
+- map(v -> repository.save(v)): Salva cada objeto Contact no banco de dados usando o repositório ContactRepository.
+
+- forEach(System.out::println): Imprime os objetos Contact salvos no banco de dados.
+
+>Esse trecho de código é usado para inicializar o banco de dados com alguns registros de contato quando o aplicativo é iniciado. Ele remove registros existentes (caso haja) e insere novos registros na tabela de contatos. Essa etapa é opcional e pode ser útil para preencher o banco de dados com dados iniciais para testes e desenvolvimento.
