@@ -335,3 +335,44 @@ public Contact create(@RequestBody Contact contact){
 > @PostMapping e public Contact create(@RequestBody Contact contact):
 @PostMapping é uma anotação que mapeia solicitações HTTP do tipo POST para o método create. Isso significa que o método create será chamado quando uma solicitação POST for feita para o endpoint correspondente.
 O método create recebe um objeto Contact no corpo da solicitação, que é deserializado automaticamente a partir do JSON enviado no corpo da solicitação. O método insere o novo contato no repositório (banco de dados) usando o método save e, em seguida, retorna o contato criado.
+
+#### Update a Contact (PUT /contacts)
+
+```ruby
+@PutMapping(value="/{id}")
+  public ResponseEntity<Contact> update(@PathVariable("id") long id,
+                                        @RequestBody Contact contact){
+    return repository.findById(id)
+        .map(record -> {
+            record.setName(contact.getName());
+            record.setEmail(contact.getEmail());
+            record.setPhone(contact.getPhone());
+            Contact updated = repository.save(record);
+            return ResponseEntity.ok().body(updated);
+        }).orElse(ResponseEntity.notFound().build());
+  }
+  ```
+>In order to update a contact, we need to inform its ID in the path variable. We also need to pass the updated contact.
+
+>Next, we will try to find the contact to be updated. If the contact is found, we update the values from the record from the database with the values passed as parameter to the method and save it. In this case, as the record exists, an update statement will performed in the contact table. We also return the updated contact. In case the contact is not found, it returns HTTP 404.
+
+>@DeleteMapping é uma anotação que mapeia solicitações HTTP do tipo DELETE para o método delete. Isso significa que o método delete será executado quando uma solicitação DELETE for feita para o endpoint correspondente, que inclui um parâmetro de caminho {id}.
+O método delete recebe o valor do identificador (id) como um parâmetro de caminho usando a anotação @PathVariable. Ele verifica se existe um contato com o identificador fornecido no repositório. Se o contato existir, ele é excluído usando repository.deleteById(id) e uma resposta com código de status 200 (OK) é retornada. Se o contato não existir, uma resposta com código de status 404 (Not Found) é retornada.
+
+#### Remove a Contact (DELETE /contacts/{id})
+
+```ruby
+@DeleteMapping(path ={"/{id}"})
+  public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    return repository.findById(id)
+        .map(record -> {
+            repository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
+  }
+```
+> To remove a contact, we first need to retrieve it from the database. In case it is found, we delete it passing its ID and return HTTP 200 to indicate the deletion was performed successfully. In case the contact is not found, we return HTTP 404.
+
+>@PutMapping é uma anotação que mapeia solicitações HTTP do tipo PUT para o método update. Isso significa que o método update será executado quando uma solicitação PUT for feita para o endpoint correspondente, que inclui um parâmetro de caminho {id}.
+O método update recebe o valor do identificador (id) como um parâmetro de caminho usando a anotação @PathVariable e um objeto Contact no corpo da solicitação usando a anotação @RequestBody.
+O método verifica se existe um contato com o identificador fornecido no repositório. Se o contato existir, ele atualiza os campos do contato com os valores fornecidos no objeto contact e salva as alterações usando repository.save(record). Em seguida, ele retorna uma resposta com código de status 200 (OK) contendo o contato atualizado. Se o contato não existir, uma resposta com código de status 404 (Not Found) é retornada.
