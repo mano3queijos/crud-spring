@@ -5,7 +5,7 @@
 
 > projeto spring criado com as dependencias: 
 
-### spring web
+### spring web:
 
 ```ruby
     <dependency>
@@ -16,7 +16,7 @@
 Essa dependência é usada para criar aplicativos da web com Spring Boot. Ela inclui componentes para desenvolvimento web, como o Spring MVC (Model-View-Controller) para construir controladores, manipuladores de solicitações e views.
 
 
-### PostgreSql and Mysql Drivers
+### PostgreSql and Mysql Drivers:
 
 
 ```ruby
@@ -40,7 +40,7 @@ org.postgresql:postgresql:
 Essa dependência é usada para se conectar a um banco de dados PostgreSQL. Ela fornece o driver JDBC para se comunicar com um banco de dados PostgreSQL.
 
 
-### Spring Data Jpa
+### Spring Data Jpa:
 
 ```ruby
    <dependency>
@@ -53,7 +53,7 @@ Esta dependência é usada em projetos Spring Boot que desejam usar o JPA (Java 
 O Hibernate é um framework de mapeamento objeto-relacional (ORM) em Java. Ele simplifica a interação entre um aplicativo Java e um banco de dados relacional, permitindo que os desenvolvedores trabalhem com objetos Java em vez de escrever SQL diretamente. O objetivo principal do Hibernate é mapear objetos Java para tabelas de banco de dados e vice-versa, facilitando o desenvolvimento de aplicativos que usam bancos de dados relacionais.
 
 
-### Lombok 
+### Lombok :
 
 ```ruby
     <dependency>
@@ -65,7 +65,7 @@ O Hibernate é um framework de mapeamento objeto-relacional (ORM) em Java. Ele s
 
 O projeto Lombok é uma biblioteca que ajuda a reduzir a verbosidade do código Java, como mencionado anteriormente. No entanto, essa dependência é marcada como opcional (<optional>true</optional>), o que significa que seu uso é opcional e não é necessário para a funcionalidade principal do projeto. Ela é frequentemente usada para simplificar a criação de classes de entidades e reduzir a quantidade de código repetitivo.
 
-### spring-boot-starter-test
+### spring-boot-starter-test:
 
 ```ruby
     <dependency>
@@ -75,7 +75,7 @@ O projeto Lombok é uma biblioteca que ajuda a reduzir a verbosidade do código 
     </dependency>
 ```
 
-## Pom
+## Pom:
 
 
 ```ruby
