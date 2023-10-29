@@ -175,3 +175,35 @@ O projeto Lombok é uma biblioteca que ajuda a reduzir a verbosidade do código 
 >plugin Especifica um plugin, neste caso, o spring-boot-maven-plugin. Esse plugin é específico para projetos Spring Boot e é usado para criar artefatos executáveis do Spring Boot.
 
 >configuration Contém as configurações específicas para o plugin. Aqui, o plugin é configurado para excluir a dependência do Lombok durante a construção do artefato, o que é útil para evitar problemas de dependência ao criar o JAR executável.
+
+
+## Project Structure
+
+cole uma imagem aqui 😎
+
+> ## Model
+
+### Contact.java
+
+```ruby
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Entity
+public class Contact {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  private String name;
+  private String email;
+  private String phone;
+}
+```
+AllArgsConstructor: automatically creates a class construtor with all arguments (properties).
+NoArgsConstructor: automatically creates an empty class construtor with all arguments (properties).
+Data: creates toString, equals, hashCode, getters and setters.
+
+
+
