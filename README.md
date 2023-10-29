@@ -177,11 +177,11 @@ O projeto Lombok é uma biblioteca que ajuda a reduzir a verbosidade do código 
 >configuration Contém as configurações específicas para o plugin. Aqui, o plugin é configurado para excluir a dependência do Lombok durante a construção do artefato, o que é útil para evitar problemas de dependência ao criar o JAR executável.
 
 
-## Project Structure
+## Project Structure:
 
 cole uma imagem aqui 😎
 
-> ## Model
+ ## Model:
 
 ### Contact.java
 
@@ -201,9 +201,137 @@ public class Contact {
   private String phone;
 }
 ```
-AllArgsConstructor: automatically creates a class construtor with all arguments (properties).
-NoArgsConstructor: automatically creates an empty class construtor with all arguments (properties).
-Data: creates toString, equals, hashCode, getters and setters.
+>AllArgsConstructor: automatically creates a class construtor with all arguments (properties).
+
+>NoArgsConstructor: automatically creates an empty class construtor with all arguments (properties).
+
+>Data: creates toString, equals, hashCode, getters and setters.
+
+>anotação @Entity é usada para marcar a classe Contact como uma entidade JPA (Java Persistence API), o que significa que ela será mapeada para uma tabela em um banco de dados relacional.
+
+>A anotação @GeneratedValue é usada para especificar como os valores da coluna de chave primária (no caso, id) são gerados automaticamente. No código, está configurado para usar a estratégia GenerationType.IDENTITY, que geralmente é usada com bancos de dados que suportam a geração de chaves primárias automaticamente, como o MySQL e o PostgreSQL.
+
+>A enumeração GenerationType define diferentes estratégias para gerar valores de chave primária automaticamente.
+
+>Esta anotação marca o campo id como a chave primária da entidade.
+
+>@GeneratedValue(strategy = GenerationType.IDENTITY):
+
+>Esta anotação configura a geração automática do valor da chave primária. No caso, a estratégia usada é GenerationType.IDENTITY, que delega a geração da chave primária ao banco de dados.
+
+>A classe Contact possui quatro campos: id, name, email, e phone. Esses campos representam as informações de contato de uma entidade no banco de dados.
 
 
 
+## Repository:
+
+### ContactRepository.java (Interface):
+
+
+```ruby
+package com.emanuel.springcloudpsql.repository;
+
+import com.emanuel.springcloudpsql.model.Contact;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ContactRepository extends JpaRepository<Contact, Long> {
+    
+}
+
+```
+> Para ter acesso facil aos methodos que vão manipular a tabela de contatos, precisamos apenas criar uma interface que extenda JpaRepository passando a classe que representa nosso model e o tipo da chave primaria como, argumentos genericos;
+> a interface ContactRepository é uma interface Spring Data JPA que fornece métodos predefinidos para realizar operações de persistência de dados no banco de dados relacionado à entidade Contact. Essa interface é anotada com @Repository, tornando-a um componente gerenciado pelo Spring e permitindo a injeção dela em outros componentes da aplicação que desejem realizar operações de banco de dados relacionadas a contatos;
+
+
+## Controller:
+
+###  ContactController.java 
+
+```ruby
+package com.emanuel.springcloudpsql.controller;
+
+import com.emanuel.springcloudpsql.repository.ContactRepository;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping({"/contacts"})
+public class ContactController {
+
+    private ContactRepository repository;
+
+    ContactController(ContactRepository contactRepository){
+        this.repository = contactRepository;
+    }
+
+}
+
+```
+
+>A anotação @RestController contém as anotações @Controller e @ResponseBody. A anotação @Controller representa uma classe com endpoints, e a @ResponseBody indica que o valor de retorno de um método deve ser vinculado ao corpo da resposta da web (conforme a documentação)."
+
+>Uma "classe com endpoints" se refere a uma classe em um aplicativo web que contém métodos que tratam solicitações HTTP específicas. Cada método em tal classe é conhecido como um "endpoint" porque corresponde a um ponto de acesso ou URL no aplicativo que os clientes podem chamar para realizar uma ação específica. Em outras palavras, os endpoints são os pontos de entrada para interações com o aplicativo por meio da web.
+
+>Esses endpoints são responsáveis por lidar com solicitações HTTP, como GET, POST, PUT e DELETE, e realizar operações relacionadas ao recurso representado pelo endpoint. Por exemplo, em um aplicativo de gerenciamento de contatos, uma classe com endpoints pode conter métodos que permitem:
+
+- Obter a lista de todos os contatos (usando o método GET).
+- Adicionar um novo contato (usando o método POST).
+- Atualizar um contato existente (usando o método PUT).
+- Excluir um contato (usando o método DELETE).
+
+>The @RequestMapping("/contacts") indicates that the url of the API in this controller will start with /contacts, so we will be able to access http://localhost:8080/contacts as our endpoint.
+
+
+#### Retrieve All Contacts (GET /contacts)
+ ```ruby
+ @GetMapping
+public List findAll(){
+  return repository.findAll();
+}
+ ```
+> The findAll method is going to retrieve all the records from the database ```
+> (select * from contact).```
+> @GetMapping é uma anotação que especifica que o método findAll deve ser invocado quando houver uma solicitação HTTP do tipo GET no endpoint mapeado por padrão. Isso significa que o método findAll será executado quando um cliente fizer uma solicitação GET para o endpoint raiz do controlador, que geralmente é algo como "/contacts".
+O método findAll é responsável por recuperar todos os contatos do repositório (banco de dados) e retorná-los como uma lista. Normalmente, isso resulta em uma resposta com uma lista de contatos em formato JSON.
+#### Retrieve a Contact by ID (GET /contacts/{id})
+
+```ruby
+@GetMapping(path = {"/{id}"})
+public ResponseEntity<Contact> findById(@PathVariable long id){
+  return repository.findById(id)
+          .map(record -> ResponseEntity.ok().body(record))
+          .orElse(ResponseEntity.notFound().build());
+}
+```
+
+>The @PathVariable annotation binds the method parameter id with the path variable \{id}.
+we will go to the database and will try to retrieve the contact ```
+ (select * from contact where id = ?).```
+If a contact is found, we return it (HTTP 200 - OK), else, we return HTTP 404 -Not Found.
+>Nesse caso, @GetMapping é usado novamente para mapear solicitações GET, mas com um caminho específico, que inclui um parâmetro {id} entre chaves. Isso permite que o método findById seja acionado quando uma solicitação GET é feita para um URL que inclui um valor de identificação, por exemplo, "/contacts/123", onde "123" é o valor do identificador.
+O método findById recebe o valor do identificador como um parâmetro de caminho usando a anotação @PathVariable. Ele busca um contato com o identificador fornecido no repositório. Se encontrar o contato, retorna um objeto ResponseEntity com um código de status 200 (OK) e o corpo da resposta contendo o contato. Caso contrário, retorna um ResponseEntity com um código de status 404 (Not Found).
+
+#### Create a new Contact (POST /contacts)
+
+```ruby
+@PostMapping
+public Contact create(@RequestBody Contact contact){
+    return repository.save(contact);
+}
+```
+
+>The @RequestBody annotation indicates a method parameter should be bound to the body of the web request. This means the method expects the following content from que request (in JSON format):
+
+```ruby
+{
+    "name": "Java",
+    "email": "java@email.com",
+    "phone": "(111) 111-1111"
+}
+```
+>Spring will automatically parse the request and create a variable of type Contact with its contents. Then, it will save it. The id of the contact will be null, therefore the save method will perform an insert into the Contact table.
+> @PostMapping e public Contact create(@RequestBody Contact contact):
+@PostMapping é uma anotação que mapeia solicitações HTTP do tipo POST para o método create. Isso significa que o método create será chamado quando uma solicitação POST for feita para o endpoint correspondente.
+O método create recebe um objeto Contact no corpo da solicitação, que é deserializado automaticamente a partir do JSON enviado no corpo da solicitação. O método insere o novo contato no repositório (banco de dados) usando o método save e, em seguida, retorna o contato criado.
