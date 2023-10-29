@@ -179,7 +179,7 @@ O projeto Lombok é uma biblioteca que ajuda a reduzir a verbosidade do código 
 
 ## Project Structure:
 
-cole uma imagem aqui 😎
+![img.png](img.png)
 
  ## Model:
 
@@ -406,6 +406,7 @@ public class SpringCloudMysqlApplication {
 	}
 }
 ```
+> - this step is optional in case you already using an existing database/table.
 
 >@SpringBootApplication:
 Essa anotação é usada para marcar a classe SpringCloudMysqlApplication como a classe principal do aplicativo Spring Boot. Isso significa que a partir dessa classe, o aplicativo será inicializado.
@@ -429,3 +430,34 @@ Código dentro do CommandLineRunner:
 - forEach(System.out::println): Imprime os objetos Contact salvos no banco de dados.
 
 >Esse trecho de código é usado para inicializar o banco de dados com alguns registros de contato quando o aplicativo é iniciado. Ele remove registros existentes (caso haja) e insere novos registros na tabela de contatos. Essa etapa é opcional e pode ser útil para preencher o banco de dados com dados iniciais para testes e desenvolvimento.
+
+
+## DataBase:
+
+```ruby
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url=jdbc:postgresql://localhost:5432/CrudSpringBoot?useSSL=false
+#your database name and password
+
+spring.datasource.username=postgres
+spring.datasource.password=root
+
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+```
+
+```ruby
+CREATE TABLE `mydatabase`.`contact` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `email` VARCHAR(255) NULL,
+  `phone` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
+  ALTER TABLE `mydatabase`.`contact`
+  CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
+  ADD UNIQUE INDEX `id_UNIQUE` (`id` ASC);
+```
+
+
